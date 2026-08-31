@@ -185,11 +185,36 @@ body {
 }
 
 .subjects-list li {
-  display: flex;
-  justify-content: space-between;
   padding: 12px 0;
   border-bottom: 1px solid var(--border);
+}
+
+.subject-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.subject-info span {
   color: var(--muted);
+}
+
+.subject-info strong {
+  color: var(--text);
+}
+
+.progress-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #0f1729;
+}
+
+.progress-bar {
+  width: var(--progress);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
 }
 
 .subjects-list span {
