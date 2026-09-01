@@ -217,6 +217,34 @@ body {
   background: var(--accent);
 }
 
+.subject-info {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.subject-info span {
+  color: var(--muted);
+}
+
+.subject-info strong {
+  color: var(--text);
+}
+
+.progress-track {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #0f1729;
+}
+
+.progress-bar {
+  width: var(--progress);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+}
+
 .subjects-list span {
   color: var(--text);
   font-weight: 700;
@@ -275,3 +303,69 @@ body {
   font-size: 0.75rem;
 }
 
+@media (max-width: 800px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding: 16px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .main-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 8px;
+    margin-top: 20px;
+  }
+
+  .nav-link {
+    white-space: nowrap;
+  }
+
+  .dashboard {
+    padding: 24px 16px;
+  }
+
+  .header h1 {
+    font-size: 1.7rem;
+  }
+
+  .summary-cards,
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.insights-section summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  font-size: 1.4rem;
+  font-weight: 700;
+  list-style: none;
+}
+
+.insights-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.insights-section summary span {
+  color: var(--accent);
+  font-size: 0.85rem;
+}
+
+.insights-content {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.insights-content p + p {
+  margin-top: 10px;
+}
