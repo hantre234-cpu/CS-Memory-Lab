@@ -73,6 +73,7 @@ button {
   --muted: #98a2b8;
   --accent: #7c5cff;
   --border: #26324d;
+  --fair: #e86c00;
 }
 
 body {
@@ -368,4 +369,70 @@ body {
 
 .insights-content p + p {
   margin-top: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
+.review-status{
+  margin-top: 24px;
+  padding-top:10px ;
+  color: var(--fair);
+  font-weight:800;
+}
+
+.review-session {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.review-session h3 {
+  margin-top: 8px;
+  font-size: 1.4rem;
+}
+
+.review-session > p:not(.eyebrow) {
+  margin-top: 10px;
+  color: var(--muted);
+}
+
+.review-session button {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+#review-answer {
+  color: var(--text);
+}
+
+.review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.review-actions button {
+  background: #26324d;
+}
+
+.review-actions button:hover {
+  background: var(--accent);
+}
+
+#review-feedback {
+  margin-top: 16px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.review-actions.hidden {
+  display: none;
 }

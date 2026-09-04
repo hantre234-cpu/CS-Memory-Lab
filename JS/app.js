@@ -51,6 +51,13 @@ let currentReview = createReview(
 
 const reviewHistory = [];
 
+function saveReviewHistory() {
+  localStorage.setItem(
+    "reviewHistory",
+    JSON.stringify(reviewHistory)
+  );
+}
+
 function getNextReviewDate(rating) {
   const daysByRating = {
     Forgot: 1,
@@ -120,6 +127,7 @@ ratingButtons.forEach((button) => {
         });
 
         reviewHistory.push({ ...currentReview });
+        saveReviewHistory();
         ratingButtons.forEach((ratingButton) => {
         ratingButton.disabled = true;
         });
