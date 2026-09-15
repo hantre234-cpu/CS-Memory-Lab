@@ -127,12 +127,11 @@
             <div class="bar" style="--height: 35%;"></div>
             <span>Sat</span>
         </div>
-
-  <div class="bar-item">
-    <div class="bar" style="--height: 60%;"></div>
-    <span>Sun</span>
-  </div>
-    </div>
+        <div class="bar-item">
+          <div class="bar" style="--height: 60%;"></div>
+          <span>Sun</span>
+        </div>
+          </div>
         </article>
 
         <article class="content-section subjects-section">
@@ -185,6 +184,57 @@
           <p>You completed 24 reviews this week.</p>
         </div>
       </details>
+      <section class="content-section add-note-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">My Knowledge</p>
+            <h2>Add a new note</h2>
+          </div>
+        </div>
+
+        <form id="note-form">
+          <label for="note-title">Title</label>
+          <input
+            id="note-title"
+            type="text"
+            placeholder="Example: TCP 3-Way Handshake"
+            required
+          >
+
+          <label for="note-subject">Subject</label>
+          <select id="note-subject" required>
+            <option value="">Choose a subject</option>
+            <option value="Networks">Networks</option>
+            <option value="Databases">Databases</option>
+            <option value="Algorithms">Algorithms</option>
+            <option value="Operating Systems">Operating Systems</option>
+          </select>
+
+          <label for="note-content">What did you learn?</label>
+          <textarea
+            id="note-content"
+            rows="5"
+            placeholder="Write a short explanation in your own words..."
+            required
+          ></textarea>
+
+          <button type="submit">Add note</button>
+        </form>
+
+        <p id="note-message" aria-live="polite"></p>
+      </section>
+      <section class="content-section notes-list-section">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">My Knowledge</p>
+            <h2>Your notes</h2>
+          </div>
+        </div>
+
+        <div id="notes-list" class="notes-list">
+          <p class="empty-notes">No notes yet. Add your first note above.</p>
+        </div>
+      </section>
     </main>
 
   </div>

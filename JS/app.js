@@ -9,7 +9,6 @@ const reviewFeedback = document.querySelector("#review-feedback");
 const reviewCounter = document.querySelector("#review-counter");
 const reviewQuestion = document.querySelector("#review-question");
 const nextReviewButton = document.querySelector("#next-review-button");
-const reviewCount = document.querySelector("#review-count");
 const reviewQueue = [
   {
     id: 1,
@@ -33,6 +32,90 @@ const reviewQueue = [
       "Binary search finds an item in a sorted list by repeatedly dividing the search range in half."
   }
 ];
+const reviewCount = document.querySelector("#review-count");
+const noteForm = document.querySelector("#note-form");
+const noteTitleInput = document.querySelector("#note-title");
+const noteSubjectInput = document.querySelector("#note-subject");
+const noteContentInput = document.querySelector("#note-content");
+const noteMessage = document.querySelector("#note-message");
+const savedNotes = localStorage.getItem("notes");
+const notes = savedNotes ? JSON.parse(savedNotes) : [];
+
+const notesList = document.querySelector("#notes-list");
+
+function saveNotes() {
+  localStorage.setItem(
+    "notes",
+    JSON.stringify(notes)
+  );
+}
+
+function renderNotes() {
+  notesList.innerHTML = "";
+  const deleteButton = document.createElement("button");
+
+  deleteButton.className = "delete-note-button";
+  deleteButton.type = "button";
+  deleteButton.textContent = "Delete";
+
+  deleteButton.addEventListener("click", () => {
+    deleteNote(note.id);
+  });
+
+  if (notes.length === 0) {
+    const emptyMessage = document.createElement("p");
+
+    emptyMessage.className = "empty-notes";
+    emptyMessage.textContent =
+      "No notes yet. Add your first note above.";
+
+    notesList.append(emptyMessage);
+    return;
+  }
+
+  notes.forEach((note) => {
+  const noteCard = document.createElement("article");
+  const subject = document.createElement("span");
+  const title = document.createElement("h3");
+  const content = document.createElement("p");
+  const deleteButton = document.createElement("button");
+
+  noteCard.className = "note-card";
+  subject.className = "note-subject";
+  deleteButton.className = "delete-note-button";
+
+  subject.textContent = note.subject;
+  title.textContent = note.title;
+  content.textContent = note.content;
+
+  deleteButton.type = "button";
+  deleteButton.textContent = "Delete";
+
+  deleteButton.addEventListener("click", () => {
+    deleteNote(note.id);
+  });
+
+  noteCard.append(subject, title, content, deleteButton);
+  notesList.append(noteCard);
+});
+}
+
+renderNotes();
+
+function deleteNote(noteId) {
+  const noteIndex = notes.findIndex((note) => {
+    return note.id === noteId;
+  });
+
+  if (noteIndex === -1) {
+    return;
+  }
+
+  notes.splice(noteIndex, 1);
+
+  saveNotes();
+  renderNotes();
+}
 
 function createReview(review) {
   return {
@@ -168,4 +251,29 @@ nextReviewButton.addEventListener("click", () => {
   );
 
   renderReview();
+});
+
+noteForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const note = {
+    id: crypto.randomUUID(),
+    title: noteTitleInput.value.trim(),
+    subject: noteSubjectInput.value,
+    content: noteContentInput.value.trim(),
+    createdAt: new Date().toISOString(),
+    nextReviewAt: new Date().toISOString(),
+    mastery: 0
+  };
+
+  notes.push(note);
+  saveNotes();
+  renderNotes();
+
+  noteMessage.textContent =
+    `"${note.title}" was added successfully.`;
+
+  noteForm.reset();
+
+  console.log(notes);
 });
