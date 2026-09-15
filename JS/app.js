@@ -9,7 +9,7 @@ const reviewFeedback = document.querySelector("#review-feedback");
 const reviewCounter = document.querySelector("#review-counter");
 const reviewQuestion = document.querySelector("#review-question");
 const nextReviewButton = document.querySelector("#next-review-button");
-
+const reviewCount = document.querySelector("#review-count");
 const reviewQueue = [
   {
     id: 1,
@@ -57,6 +57,7 @@ function saveReviewHistory() {
     JSON.stringify(reviewHistory)
   );
 }
+updateReviewCount();
 
 function getNextReviewDate(rating) {
   const daysByRating = {
@@ -111,6 +112,12 @@ revealAnswerButton.addEventListener("click", () => {
   revealAnswerButton.disabled = true;
 });
 
+function updateReviewCount(params) {
+  const remainingReviews = reviewQueue.length - reviewHistory.length;
+
+  reviewCount.textContent = Math.max(remainingReviews,0);
+}
+
 ratingButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const rating = button.dataset.rating;
@@ -128,6 +135,7 @@ ratingButtons.forEach((button) => {
 
         reviewHistory.push({ ...currentReview });
         saveReviewHistory();
+        updateReviewCount();
         ratingButtons.forEach((ratingButton) => {
         ratingButton.disabled = true;
         });
