@@ -9,7 +9,7 @@ const reviewFeedback = document.querySelector("#review-feedback");
 const reviewCounter = document.querySelector("#review-counter");
 const reviewQuestion = document.querySelector("#review-question");
 const nextReviewButton = document.querySelector("#next-review-button");
-const reviewQueue = [
+let reviewQueue = [
   {
     id: 1,
     subject: "Networks",
@@ -50,6 +50,41 @@ function saveNotes() {
   );
 }
 
+function getDueNotes() {
+  const now = new Date();
+
+  return notes.filter((note) => {
+    return new Date(note.nextReviewAt) <= now;
+  });
+}
+
+function createReviewQueueFromNotes() {
+  return getDueNotes().map((note) => {
+    return {
+      id: note.id,
+      subject: note.subject,
+      question: note.title,
+      answer: note.content
+    };
+  });
+}
+
+function getMasteryLabel(mastery) {
+  if (mastery === 0) {
+    return "Needs review";
+  }
+
+  if (mastery <= 25) {
+    return "Learning";
+  }
+
+  if (mastery <= 60) {
+    return "Good progress";
+  }
+
+  return "Strong";
+}
+
 function renderNotes() {
   notesList.innerHTML = "";
   const deleteButton = document.createElement("button");
@@ -79,6 +114,18 @@ function renderNotes() {
   const title = document.createElement("h3");
   const content = document.createElement("p");
   const deleteButton = document.createElement("button");
+  const meta = document.createElement("p");
+
+const formattedDate = new Date(
+  note.nextReviewAt
+).toLocaleDateString("en-GB", {
+  day: "numeric",
+  month: "short"
+});
+
+meta.className = "note-meta";
+meta.textContent =
+  `${getMasteryLabel(note.mastery)} · Next review: ${formattedDate}`;
 
   noteCard.className = "note-card";
   subject.className = "note-subject";
@@ -95,12 +142,16 @@ function renderNotes() {
     deleteNote(note.id);
   });
 
-  noteCard.append(subject, title, content, deleteButton);
+  noteCard.append(subject, title, content,meta, deleteButton);
   notesList.append(noteCard);
 });
 }
 
+
+
 renderNotes();
+console.log(getDueNotes);
+
 
 function deleteNote(noteId) {
   const noteIndex = notes.findIndex((note) => {
@@ -179,7 +230,11 @@ function renderReview() {
 }
 
 startReviewButton.addEventListener("click", () => {
-
+  reviewQueue = createReviewQueueFromNotes();
+  if (reviewQueue.length === 0) {
+    reviewStatus.textContent = "You have no notes ready for review today .";
+    return;
+  }
   currentReviewIndex = 0;
   currentReview = createReview(reviewQueue[currentReviewIndex]);
 
@@ -195,10 +250,8 @@ revealAnswerButton.addEventListener("click", () => {
   revealAnswerButton.disabled = true;
 });
 
-function updateReviewCount(params) {
-  const remainingReviews = reviewQueue.length - reviewHistory.length;
-
-  reviewCount.textContent = Math.max(remainingReviews,0);
+function updateReviewCount() {
+  reviewCount.textContent = getDueNotes().length;
 }
 
 ratingButtons.forEach((button) => {
@@ -208,6 +261,27 @@ ratingButtons.forEach((button) => {
 
     currentReview.reviewedAt = new Date().toISOString();
     let nextR = currentReview.nextReviewAt = getNextReviewDate(rating);
+    const noteIndex = notes.findIndex((note) => {
+      return note.id === currentReview.id;
+    });
+
+    const masteryByRating = {
+      Forgot: 0,
+      Hard: 25,
+      Good: 60,
+      Easy: 90
+    };
+
+    if (noteIndex !== -1) {
+      notes[noteIndex].nextReviewAt =
+        currentReview.nextReviewAt;
+
+      notes[noteIndex].mastery =
+        masteryByRating[rating];
+
+      saveNotes();
+      renderNotes();
+    }
     const formattedNextReview = new Date(nextR)
         .toLocaleDateString("en-GB", {
         day: "numeric",

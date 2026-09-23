@@ -541,3 +541,9 @@ body {
   background: #7f3345;
   color: white;
 }
+
+.note-meta {
+  margin-top: 14px;
+  color: var(--accent) !important;
+  font-size: 0.8rem;
+}
