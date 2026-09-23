@@ -42,6 +42,7 @@ const savedNotes = localStorage.getItem("notes");
 const notes = savedNotes ? JSON.parse(savedNotes) : [];
 
 const notesList = document.querySelector("#notes-list");
+const topSubjectsList = document.querySelector("#top-subjects-list");
 
 function saveNotes() {
   localStorage.setItem(
@@ -56,6 +57,84 @@ function getDueNotes() {
   return notes.filter((note) => {
     return new Date(note.nextReviewAt) <= now;
   });
+}
+
+function getSubjectStats() {
+  const subjectStats = {};
+
+  notes.forEach((note) => {
+    if (!subjectStats[note.subject]) {
+      subjectStats[note.subject] = {
+        totalMastery: 0,
+        count: 0
+      };
+    }
+
+    subjectStats[note.subject].totalMastery +=
+      note.mastery || 0;
+
+    subjectStats[note.subject].count += 1;
+  });
+
+  return Object.entries(subjectStats)
+    .map(([subject, stats]) => {
+      return {
+        subject,
+        mastery: Math.round(
+          stats.totalMastery / stats.count
+        )
+      };
+    })
+    .sort((first, second) => {
+      return second.mastery - first.mastery;
+    });
+}
+
+function renderTopSubjects() {
+  topSubjectsList.innerHTML = "";
+
+  const subjects = getSubjectStats();
+
+  if (subjects.length === 0) {
+    const emptyItem = document.createElement("li");
+
+    emptyItem.textContent = "No subjects yet.";
+    topSubjectsList.append(emptyItem);
+    return;
+  }
+
+  subjects.slice(0, 3).forEach((item) => {
+    const listItem = document.createElement("li");
+    const subjectInfo = document.createElement("div");
+    const subjectName = document.createElement("span");
+    const mastery = document.createElement("strong");
+    const progressTrack = document.createElement("div");
+    const progressBar = document.createElement("div");
+
+    subjectInfo.className = "subject-info";
+    progressTrack.className = "progress-track";
+    progressBar.className = "progress-bar";
+
+    subjectName.textContent = item.subject;
+    mastery.textContent = `${item.mastery}%`;
+
+    progressBar.style.setProperty(
+      "--progress",
+      `${item.mastery}%`
+    );
+
+    subjectInfo.append(subjectName, mastery);
+    progressTrack.append(progressBar);
+    listItem.append(subjectInfo, progressTrack);
+
+    topSubjectsList.append(listItem);
+  });
+}
+
+function refreshDashboard() {
+  renderNotes();
+  renderTopSubjects();
+  updateReviewCount();
 }
 
 function createReviewQueueFromNotes() {
@@ -147,9 +226,9 @@ meta.textContent =
 });
 }
 
-
-
-renderNotes();
+// renderNotes();
+// renderTopSubjects();
+refreshDashboard();
 console.log(getDueNotes);
 
 
@@ -165,7 +244,7 @@ function deleteNote(noteId) {
   notes.splice(noteIndex, 1);
 
   saveNotes();
-  renderNotes();
+  refreshDashboard();
 }
 
 function createReview(review) {
@@ -280,7 +359,7 @@ ratingButtons.forEach((button) => {
         masteryByRating[rating];
 
       saveNotes();
-      renderNotes();
+      refreshDashboard();
     }
     const formattedNextReview = new Date(nextR)
         .toLocaleDateString("en-GB", {
@@ -342,7 +421,7 @@ noteForm.addEventListener("submit", (event) => {
 
   notes.push(note);
   saveNotes();
-  renderNotes();
+  refreshDashboard();
 
   noteMessage.textContent =
     `"${note.title}" was added successfully.`;
