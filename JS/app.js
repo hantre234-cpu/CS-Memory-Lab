@@ -43,7 +43,18 @@ const notes = savedNotes ? JSON.parse(savedNotes) : [];
 
 const notesList = document.querySelector("#notes-list");
 const topSubjectsList = document.querySelector("#top-subjects-list");
+const activityChart = document.querySelector("#activity-chart");
 
+const streakCount = document.querySelector("#streak-count");
+
+const reviewHistory = [];
+
+function saveReviewHistory() {
+  localStorage.setItem(
+    "reviewHistory",
+    JSON.stringify(reviewHistory)
+  );
+}
 function saveNotes() {
   localStorage.setItem(
     "notes",
@@ -88,6 +99,69 @@ function getSubjectStats() {
     .sort((first, second) => {
       return second.mastery - first.mastery;
     });
+}
+
+function getWeekActivity() {
+  const week = [];
+
+  for (let daysAgo = 6; daysAgo >= 0; daysAgo -= 1) {
+    const date = new Date();
+
+    date.setHours(0, 0, 0, 0);
+    date.setDate(date.getDate() - daysAgo);
+
+    const count = reviewHistory.filter((review) => {
+      const reviewedDate = new Date(review.reviewedAt);
+
+      return reviewedDate.toDateString() === date.toDateString();
+    }).length;
+
+    week.push({
+      label: date.toLocaleDateString("en-GB", {
+        weekday: "short"
+      }),
+      count,
+      isToday: daysAgo === 0
+    });
+  }
+
+  return week;
+}
+
+function renderActivityChart() {
+  activityChart.innerHTML = "";
+
+  const week = getWeekActivity();
+  const highestCount = Math.max(
+    ...week.map((day) => day.count),
+    1
+  );
+
+  week.forEach((day) => {
+    const barItem = document.createElement("div");
+    const bar = document.createElement("div");
+    const label = document.createElement("span");
+
+    barItem.className = "bar-item";
+    bar.className = "bar";
+    label.textContent = day.label;
+
+    const height = (day.count / highestCount) * 100;
+
+    bar.style.setProperty(
+      "--height",
+      `${Math.max(height, 8)}%`
+    );
+
+    bar.title = `${day.count} reviews`;
+
+    if (day.isToday) {
+      bar.classList.add("active");
+    }
+
+    barItem.append(bar, label);
+    activityChart.append(barItem);
+  });
 }
 
 function renderTopSubjects() {
@@ -135,6 +209,8 @@ function refreshDashboard() {
   renderNotes();
   renderTopSubjects();
   updateReviewCount();
+  renderActivityChart();
+  updateStreak();
 }
 
 function createReviewQueueFromNotes() {
@@ -262,14 +338,7 @@ let currentReview = createReview(
   reviewQueue[currentReviewIndex]
 );
 
-const reviewHistory = [];
 
-function saveReviewHistory() {
-  localStorage.setItem(
-    "reviewHistory",
-    JSON.stringify(reviewHistory)
-  );
-}
 updateReviewCount();
 
 function getNextReviewDate(rating) {
@@ -430,3 +499,30 @@ noteForm.addEventListener("submit", (event) => {
 
   console.log(notes);
 });
+
+function getCurrentStreak() {
+  const reviewedDays = new Set(
+    reviewHistory.map((review) => {
+      return new Date(review.reviewedAt).toDateString();
+    })
+  );
+
+  let streak = 0;
+  const date = new Date();
+
+  date.setHours(0, 0, 0, 0);
+
+  while (reviewedDays.has(date.toDateString())) {
+    streak += 1;
+    date.setDate(date.getDate() - 1);
+  }
+
+  return streak;
+}
+
+function updateStreak() {
+  const streak = getCurrentStreak();
+  const dayLabel = streak === 1 ? "day" : "days";
+
+  streakCount.textContent = `${streak} ${dayLabel} 🔥`;
+}

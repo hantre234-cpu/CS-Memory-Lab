@@ -37,7 +37,7 @@
       <section class="summary-cards" aria-label="Learning summary">
         <article class="card streak-card">
           <p>Current Streak</p>
-          <h2>7 days 🔥</h2>
+          <h2 id="streak-count">0 days 🔥</h2>
         </article>
 
         <article class="card knowledge-card">
@@ -97,41 +97,11 @@
             <h2>Study Activity</h2>
           </div>
 
-          <div class="activity-chart" aria-label="Weekly study activity">
-        <div class="bar-item">
-            <div class="bar" style="--height: 45%;"></div>
-            <span>Mon</span>
-        </div>
-
-        <div class="bar-item">
-            <div class="bar" style="--height: 70%;"></div>
-            <span>Tue</span>
-        </div>
-
-        <div class="bar-item">
-            <div class="bar active" style="--height: 90%;"></div>
-            <span>Wed</span>
-        </div>
-
-        <div class="bar-item">
-            <div class="bar" style="--height: 55%;"></div>
-            <span>Thu</span>
-        </div>
-
-        <div class="bar-item">
-            <div class="bar" style="--height: 75%;"></div>
-            <span>Fri</span>
-        </div>
-
-        <div class="bar-item">
-            <div class="bar" style="--height: 35%;"></div>
-            <span>Sat</span>
-        </div>
-        <div class="bar-item">
-          <div class="bar" style="--height: 60%;"></div>
-          <span>Sun</span>
-        </div>
-          </div>
+      <div
+       id="activity-chart"
+       class="activity-chart" 
+       aria-label="Weekly study activity">
+      </div>
         </article>
 
         <article class="content-section subjects-section">
