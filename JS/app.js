@@ -46,6 +46,8 @@ const topSubjectsList = document.querySelector("#top-subjects-list");
 const activityChart = document.querySelector("#activity-chart");
 
 const streakCount = document.querySelector("#streak-count");
+const noteSearch = document.querySelector("#note-search");
+const subjectFilter = document.querySelector("#subject-filter");
 
 const reviewHistory = [];
 
@@ -172,7 +174,10 @@ function renderTopSubjects() {
   if (subjects.length === 0) {
     const emptyItem = document.createElement("li");
 
-    emptyItem.textContent = "No subjects yet.";
+    emptyMessage.textContent =
+     notes.length === 0
+                        ? "No notes yet. Add your first note above."
+                        : "No notes match your search or filter.";
     topSubjectsList.append(emptyItem);
     return;
   }
@@ -242,6 +247,21 @@ function getMasteryLabel(mastery) {
 
 function renderNotes() {
   notesList.innerHTML = "";
+  const searchText = noteSearch.value.trim().toLowerCase();
+  const selectedSubject = subjectFilter.value;
+
+  const filteredNotes = notes.filter((note) => {
+    const noteText =
+      `${note.title} ${note.subject} ${note.content}`.toLowerCase();
+
+    const matchesSearch = noteText.includes(searchText);
+
+    const matchesSubject =
+      selectedSubject === "all" ||
+      note.subject === selectedSubject;
+
+    return matchesSearch && matchesSubject;
+  });
   const deleteButton = document.createElement("button");
 
   deleteButton.className = "delete-note-button";
@@ -252,7 +272,7 @@ function renderNotes() {
     deleteNote(note.id);
   });
 
-  if (notes.length === 0) {
+  if (filteredNotes.length === 0) {
     const emptyMessage = document.createElement("p");
 
     emptyMessage.className = "empty-notes";
@@ -263,7 +283,7 @@ function renderNotes() {
     return;
   }
 
-  notes.forEach((note) => {
+  filteredNotes.forEach((note) => {
   const noteCard = document.createElement("article");
   const subject = document.createElement("span");
   const title = document.createElement("h3");
@@ -526,3 +546,11 @@ function updateStreak() {
 
   streakCount.textContent = `${streak} ${dayLabel} 🔥`;
 }
+
+noteSearch.addEventListener("input", () => {
+  renderNotes();
+});
+
+subjectFilter.addEventListener("change", () => {
+  renderNotes();
+});

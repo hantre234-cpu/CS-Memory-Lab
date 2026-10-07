@@ -172,7 +172,23 @@
             <h2>Your notes</h2>
           </div>
         </div>
+        <div class="notes-tools">
+          <label for="note-search">Search notes</label>
 
+          <input
+            id="note-search"
+            type="search"
+            placeholder="Search by title, subject, or content..."
+          >
+          <label for="subject-filter">Filter by subject</label>
+          <select id="subject-filter">
+            <option value="all">All subjects</option>
+            <option value="Networks">Networks</option>
+            <option value="Databases">Databases</option>
+            <option value="Algorithms">Algorithms</option>
+            <option value="Operating Systems">Operating Systems</option>
+          </select>
+        </div>
         <div id="notes-list" class="notes-list">
           <p class="empty-notes">No notes yet. Add your first note above.</p>
         </div>

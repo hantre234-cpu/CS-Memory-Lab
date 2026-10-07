@@ -547,3 +547,45 @@ body {
   color: var(--accent) !important;
   font-size: 0.8rem;
 }
+
+.notes-tools {
+  margin-bottom: 20px;
+}
+
+.notes-tools label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.notes-tools input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  background: #0f1729;
+  color: var(--text);
+  font: inherit;
+}
+
+.notes-tools input:focus {
+  border-color: var(--accent);
+}
+
+.notes-tools select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  background: #0f1729;
+  color: var(--text);
+  font: inherit;
+}
+
+.notes-tools select:focus {
+  border-color: var(--accent);
+}
