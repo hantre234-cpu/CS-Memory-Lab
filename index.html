@@ -160,7 +160,13 @@
             required
           ></textarea>
 
-          <button type="submit">Add note</button>
+          <button id="save-note-button" type="submit">Add note</button>
+          <button 
+            id="cancel-edit-button"
+            class="hidden"
+            type="button">
+            Cancel edit 
+          </button>
         </form>
 
         <p id="note-message" aria-live="polite"></p>

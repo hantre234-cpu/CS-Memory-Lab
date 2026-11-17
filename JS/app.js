@@ -40,6 +40,7 @@ const noteContentInput = document.querySelector("#note-content");
 const noteMessage = document.querySelector("#note-message");
 const savedNotes = localStorage.getItem("notes");
 const notes = savedNotes ? JSON.parse(savedNotes) : [];
+let editingNoteId = null;
 
 const notesList = document.querySelector("#notes-list");
 const topSubjectsList = document.querySelector("#top-subjects-list");
@@ -48,6 +49,9 @@ const activityChart = document.querySelector("#activity-chart");
 const streakCount = document.querySelector("#streak-count");
 const noteSearch = document.querySelector("#note-search");
 const subjectFilter = document.querySelector("#subject-filter");
+
+const saveNoteButton = document.querySelector("#save-note-button");
+const cancelEditButton = document.querySelector("#cancel-edit-button");
 
 const reviewHistory = [];
 
@@ -263,7 +267,8 @@ function renderNotes() {
     return matchesSearch && matchesSubject;
   });
   const deleteButton = document.createElement("button");
-
+  const editButton = document.createElement("button");
+  // delete
   deleteButton.className = "delete-note-button";
   deleteButton.type = "button";
   deleteButton.textContent = "Delete";
@@ -271,6 +276,14 @@ function renderNotes() {
   deleteButton.addEventListener("click", () => {
     deleteNote(note.id);
   });
+  // edit
+  editButton.className = "edit-note-button";
+  editButton.type = "button";
+  editButton.textContent = "Edit";
+
+  editButton.addEventListener("click", () => {
+    startEditingNote(note);
+  }); 
 
   if (filteredNotes.length === 0) {
     const emptyMessage = document.createElement("p");
@@ -283,41 +296,58 @@ function renderNotes() {
     return;
   }
 
-  filteredNotes.forEach((note) => {
+filteredNotes.forEach((note) => {
   const noteCard = document.createElement("article");
   const subject = document.createElement("span");
   const title = document.createElement("h3");
   const content = document.createElement("p");
-  const deleteButton = document.createElement("button");
   const meta = document.createElement("p");
+  const editButton = document.createElement("button");
+  const deleteButton = document.createElement("button");
 
-const formattedDate = new Date(
-  note.nextReviewAt
-).toLocaleDateString("en-GB", {
-  day: "numeric",
-  month: "short"
-});
-
-meta.className = "note-meta";
-meta.textContent =
-  `${getMasteryLabel(note.mastery)} · Next review: ${formattedDate}`;
+  const formattedDate = new Date(
+    note.nextReviewAt
+  ).toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short"
+  });
 
   noteCard.className = "note-card";
   subject.className = "note-subject";
+  meta.className = "note-meta";
+  editButton.className = "edit-note-button";
   deleteButton.className = "delete-note-button";
 
   subject.textContent = note.subject;
   title.textContent = note.title;
   content.textContent = note.content;
 
+  meta.textContent =
+    `${getMasteryLabel(note.mastery)} · Next review: ${formattedDate}`;
+
+  editButton.type = "button";
+  editButton.textContent = "Edit";
+
   deleteButton.type = "button";
   deleteButton.textContent = "Delete";
+
+  editButton.addEventListener("click", () => {
+    startEditingNote(note);
+  });
 
   deleteButton.addEventListener("click", () => {
     deleteNote(note.id);
   });
 
-  noteCard.append(subject, title, content,meta, deleteButton);
+  noteCard.append(
+    subject,
+    title,
+    content,
+    meta,
+    editButton,
+    deleteButton
+  );
+
   notesList.append(noteCard);
 });
 }
@@ -495,29 +525,74 @@ nextReviewButton.addEventListener("click", () => {
   renderReview();
 });
 
+function startEditingNote(note) {
+  editingNoteId = note.id;
+
+  noteTitleInput.value = note.title;
+  noteSubjectInput.value = note.subject;
+  noteContentInput.value = note.content;
+
+  saveNoteButton.textContent = "Update note";
+  cancelEditButton.classList.remove("hidden");
+
+  noteMessage.textContent =
+    `Editing "${note.title}"`;
+
+  noteForm.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function resetNoteForm() {
+  editingNoteId = null;
+
+  noteForm.reset();
+  saveNoteButton.textContent = "Add note";
+  cancelEditButton.classList.add("hidden");
+}
+
 noteForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
-  const note = {
-    id: crypto.randomUUID(),
+  const noteData = {
     title: noteTitleInput.value.trim(),
     subject: noteSubjectInput.value,
-    content: noteContentInput.value.trim(),
-    createdAt: new Date().toISOString(),
-    nextReviewAt: new Date().toISOString(),
-    mastery: 0
+    content: noteContentInput.value.trim()
   };
 
-  notes.push(note);
+  if (editingNoteId) {
+    const noteIndex = notes.findIndex((note) => {
+      return note.id === editingNoteId;
+    });
+
+    if (noteIndex !== -1) {
+      notes[noteIndex] = {
+        ...notes[noteIndex],
+        ...noteData
+      };
+
+      noteMessage.textContent =
+        `"${noteData.title}" was updated successfully.`;
+    }
+  } else {
+    const note = {
+      id: crypto.randomUUID(),
+      ...noteData,
+      createdAt: new Date().toISOString(),
+      nextReviewAt: new Date().toISOString(),
+      mastery: 0
+    };
+
+    notes.push(note);
+
+    noteMessage.textContent =
+      `"${note.title}" was added successfully.`;
+  }
+
   saveNotes();
   refreshDashboard();
-
-  noteMessage.textContent =
-    `"${note.title}" was added successfully.`;
-
-  noteForm.reset();
-
-  console.log(notes);
+  resetNoteForm();
 });
 
 function getCurrentStreak() {
@@ -553,4 +628,9 @@ noteSearch.addEventListener("input", () => {
 
 subjectFilter.addEventListener("change", () => {
   renderNotes();
+});
+
+cancelEditButton.addEventListener("click", () => {
+  resetNoteForm();
+  noteMessage.textContent = "Edit cancelled.";
 });

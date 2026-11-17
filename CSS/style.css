@@ -589,3 +589,21 @@ body {
 .notes-tools select:focus {
   border-color: var(--accent);
 }
+
+.edit-note-button,
+#cancel-edit-button {
+  margin-top: 16px;
+  margin-right: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--accent);
+  border-radius: 7px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.edit-note-button:hover,
+#cancel-edit-button:hover {
+  background: var(--accent);
+  color: white;
+}
